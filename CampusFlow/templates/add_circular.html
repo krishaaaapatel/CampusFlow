@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Post Circular - IAR University{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+<div class="col-md-7">
+    <div class="page-header">
+        <h2><i class="bi bi-plus-circle-fill"></i> Post a New Circular</h2>
+        <p>Fill in the details below. PDF link is optional.</p>
+    </div>
+    <div class="card">
+        <div class="card-body p-4">
+            <form method="POST" action="{{ url_for('add_circular') }}">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Circular Title *</label>
+                    <input type="text" name="title" class="form-control"
+                           placeholder="e.g. Exam Timetable Released" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Content / Description</label>
+                    <textarea name="content" class="form-control" rows="5"
+                              placeholder="Write the circular content here..."></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-file-earmark-pdf"></i> PDF Link (optional)
+                    </label>
+                    <input type="url" name="pdf_link" class="form-control"
+                           placeholder="https://example.com/document.pdf" />
+                    <small class="text-muted">Paste a Google Drive or direct PDF URL.</small>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-send-fill"></i> Post Circular
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <a href="{{ url_for('circulars') }}" class="text-muted small">
+            <i class="bi bi-arrow-left"></i> Back to Circulars
+        </a>
+    </div>
+</div>
+</div>
+
+{% endblock %}

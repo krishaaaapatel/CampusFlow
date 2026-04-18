@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Timetable - IAR University{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h2><i class="bi bi-clock-fill"></i> Weekly Timetable</h2>
+    <p>{{ dept }} &mdash; {{ selected_sem }}</p>
+</div>
+
+<!-- Semester selector -->
+{% if semesters %}
+<div class="mb-3 d-flex gap-2 flex-wrap">
+    {% for sem in semesters %}
+    <a href="{{ url_for('timetable') }}?semester={{ sem }}"
+       class="btn btn-sm {% if sem == selected_sem %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        {{ sem }}
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% set has_any = false %}
+{% for day in days_order %}
+    {% if timetable_data[day] %}{% set has_any = true %}{% endif %}
+{% endfor %}
+
+{% if has_any %}
+{% for day in days_order %}
+{% if timetable_data[day] %}
+<div class="card mb-3">
+    <div class="card-header" style="background:#1a3a6b; color:white;">
+        <i class="bi bi-calendar-day-fill"></i> {{ day }}
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Time</th>
+                    <th>Subject</th>
+                    <th>Faculty</th>
+                    <th>Room</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in timetable_data[day] %}
+                <tr>
+                    <td style="white-space:nowrap;" class="fw-semibold">
+                        {{ slot.start_time.strftime('%I:%M %p') if slot.start_time else '' }}
+                        — {{ slot.end_time.strftime('%I:%M %p') if slot.end_time else '' }}
+                    </td>
+                    <td class="fw-semibold">{{ slot.subject }}</td>
+                    <td class="text-muted">{{ slot.faculty_name or '—' }}</td>
+                    <td><span class="badge bg-secondary">{{ slot.room or '—' }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i>
+    No timetable found for <strong>{{ dept }} — {{ selected_sem }}</strong>.
+    Please contact your faculty.
+</div>
+{% endif %}
+
+{% endblock %}

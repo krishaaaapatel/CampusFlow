@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% block title %}IAR University — ERP Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero {
+    background: var(--charcoal);
+    border-radius: var(--radius);
+    padding: 56px 48px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 36px;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(217,119,6,.2) 0%, transparent 70%);
+    border-radius: 50%;
+}
+.hero::after {
+    content: 'IAR';
+    position: absolute;
+    bottom: -20px; right: 36px;
+    font-family: 'Playfair Display', serif;
+    font-size: 9rem;
+    font-weight: 800;
+    color: rgba(255,255,255,.04);
+    letter-spacing: -4px;
+    line-height: 1;
+    user-select: none;
+}
+.hero h1 {
+    font-size: 2.8rem;
+    color: #fff;
+    margin-bottom: 12px;
+    line-height: 1.15;
+}
+.hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+}
+.hero p {
+    color: #a8a29e;
+    font-size: 1rem;
+    max-width: 500px;
+    margin-bottom: 28px;
+}
+.quick-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: white;
+    padding: 24px 20px;
+    text-align: center;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    height: 100%;
+}
+.quick-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--gold);
+    color: var(--text);
+}
+.quick-card .icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin: 0 auto 14px;
+}
+.quick-card h6 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+.quick-card p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.4;
+}
+.notice-item {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+}
+.notice-item:last-child { border-bottom: none; }
+.notice-item:hover { background: #faf8f4; }
+.notice-pin {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Banner -->
+<div class="hero">
+    <div style="position:relative; z-index:1;">
+        <div class="mb-3">
+            <span style="background:rgba(217,119,6,.2); color:var(--gold); font-size:0.75rem; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; padding:4px 12px; border-radius:99px; border:1px solid rgba(217,119,6,.3);">
+                IAR University Portal
+            </span>
+        </div>
+        <h1>Your Campus,<br><em>All in One Place.</em></h1>
+        <p>Access your academics, communicate with faculty, manage your campus life — all from one secure portal.</p>
+
+        {% if not session.user_id %}
+        <a href="{{ url_for('login') }}" class="btn btn-gold px-5 py-2 fw-bold me-2">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+        </a>
+        {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-gold px-5 py-2 fw-bold">
+            <i class="bi bi-speedometer2 me-1"></i> Go to Dashboard
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<!-- Quick Access Grid -->
+<p class="section-label mb-3">Quick Access</p>
+<div class="row g-3 mb-5">
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('faculty_map') }}" class="quick-card lift">
+            <div class="icon" style="background:#fef3c7;">
+                <i class="bi bi-map-fill" style="color:var(--gold);"></i>
+            </div>
+            <h6>Faculty Map</h6>
+            <p>Find office locations</p>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('lost_found') }}" class="quick-card lift">
+            <div class="icon" style="background:var(--red-light);">
+                <i class="bi bi-search-heart-fill" style="color:var(--red);"></i>
+            </div>
+            <h6>Lost & Found</h6>
+            <p>Report or recover items</p>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('events') }}" class="quick-card lift">
+            <div class="icon" style="background:var(--green-light);">
+                <i class="bi bi-star-fill" style="color:var(--green);"></i>
+            </div>
+            <h6>Campus Events</h6>
+            <p>Register for events</p>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('academic_calendar') }}" class="quick-card lift">
+            <div class="icon" style="background:#e0e7ff;">
+                <i class="bi bi-calendar3-fill" style="color:#4338ca;"></i>
+            </div>
+            <h6>Calendar</h6>
+            <p>Holidays & key dates</p>
+        </a>
+    </div>
+</div>
+
+
+<!-- Notice Board -->
+<div class="row g-4">
+    <div class="col-md-8">
+        <p class="section-label">Latest Notices</p>
+        <div class="card">
+            <div class="card-header ch-gold">
+                <i class="bi bi-megaphone-fill me-2" style="color:var(--gold);"></i>
+                Notice Board
+            </div>
+            <div class="card-body p-0">
+                {% if notices %}
+                    {% for notice in notices %}
+                    <div class="notice-item d-flex gap-3">
+                        <div class="notice-pin"></div>
+                        <div>
+                            <div class="fw-semibold mb-1" style="font-size:0.92rem;">{{ notice.title }}</div>
+                            <p class="text-muted mb-1" style="font-size:0.85rem;">{{ notice.content }}</p>
+                            <small class="text-muted" style="font-size:0.75rem;">
+                                {{ notice.author }} &mdash; {{ notice.posted_at.strftime('%d %b %Y') }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted text-center py-4">No notices yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Side info -->
+    <div class="col-md-4">
+        <p class="section-label">Resources</p>
+        <div class="card">
+            <div class="card-body p-0">
+                {% for label, icon, url, color in [
+                    ('Circulars', 'megaphone', 'circulars', 'var(--gold)'),
+                    ('Exam Schedule', 'journal-text', 'exam_schedule', 'var(--red)'),
+                    ('Faculty Directory', 'people-fill', 'faculty_map', 'var(--green)')
+                ] %}
+                <a href="{{ url_for(url) }}"
+                   style="display:flex; align-items:center; gap:14px; padding:16px 18px; border-bottom:1px solid var(--border); text-decoration:none; color:var(--text); transition:background .15s;"
+                   onmouseover="this.style.background='#faf8f4'" onmouseout="this.style.background=''">
+                    <div style="width:36px;height:36px;border-radius:10px;background:{{ color }}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-{{ icon }}-fill" style="color:{{ color }};"></i>
+                    </div>
+                    <span class="fw-semibold" style="font-size:0.9rem;">{{ label }}</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted" style="font-size:0.75rem;"></i>
+                </a>
+                {% endfor %}
+                <a href="{{ url_for('login') if not session.user_id else url_for('chat') }}"
+                   style="display:flex; align-items:center; gap:14px; padding:16px 18px; text-decoration:none; color:var(--text); transition:background .15s;"
+                   onmouseover="this.style.background='#faf8f4'" onmouseout="this.style.background=''">
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(124,58,237,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-incognito" style="color:#7c3aed;"></i>
+                    </div>
+                    <span class="fw-semibold" style="font-size:0.9rem;">Anonymous Chat</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted" style="font-size:0.75rem;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

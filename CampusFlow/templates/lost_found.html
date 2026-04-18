@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Lost & Found - IAR University ERP{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2><i class="bi bi-search-heart-fill"></i> Lost & Found Board</h2>
+    <p>Report lost or found items. This board is publicly visible to everyone on campus.</p>
+</div>
+
+<div class="row g-4">
+
+    <!-- ===== LEFT: Post a new item form ===== -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-plus-circle-fill"></i> Post an Item
+            </div>
+            <div class="card-body p-3">
+
+                <form method="POST" action="{{ url_for('lost_found') }}">
+
+                    <!-- Lost or Found toggle -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">I am reporting a:</label>
+                        <div class="d-flex gap-3">
+                            <!--
+                                Radio buttons: user picks either 'lost' or 'found'.
+                                The 'name="type"' matches what Flask reads with
+                                request.form.get("type")
+                            -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                       name="type" id="typeLost" value="lost" checked />
+                                <label class="form-check-label fw-bold text-danger" for="typeLost">
+                                    Lost Item
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                       name="type" id="typeFound" value="found" />
+                                <label class="form-check-label fw-bold text-success" for="typeFound">
+                                    Found Item
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item Name -->
+                    <div class="mb-3">
+                        <label for="item_name" class="form-label fw-semibold">
+                            <i class="bi bi-box-seam"></i> Item Name *
+                        </label>
+                        <input type="text" name="item_name" id="item_name"
+                               class="form-control" placeholder="e.g. Blue Water Bottle"
+                               required maxlength="150" />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">
+                            <i class="bi bi-text-paragraph"></i> Description
+                        </label>
+                        <textarea name="description" id="description" class="form-control"
+                                  rows="3"
+                                  placeholder="Where did you lose/find it? Any identifying marks?"></textarea>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="mb-4">
+                        <label for="contact" class="form-label fw-semibold">
+                            <i class="bi bi-telephone"></i> Your Contact Info *
+                        </label>
+                        <input type="text" name="contact" id="contact"
+                               class="form-control"
+                               placeholder="Email or phone number"
+                               required maxlength="150" />
+                        <small class="text-muted">This will be visible publicly so others can reach you.</small>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-send-fill"></i> Post to Board
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- END FORM COLUMN -->
+
+
+    <!-- ===== RIGHT: Items board ===== -->
+    <div class="col-md-8">
+
+        <!-- Filter buttons (visual only — you can add JS filtering later) -->
+        <div class="d-flex gap-2 mb-3">
+            <span class="badge bg-danger px-3 py-2 fs-6">
+                <i class="bi bi-exclamation-circle"></i>
+                Lost: {{ items | selectattr('type', 'equalto', 'lost') | list | length }}
+            </span>
+            <span class="badge bg-success px-3 py-2 fs-6">
+                <i class="bi bi-check-circle"></i>
+                Found: {{ items | selectattr('type', 'equalto', 'found') | list | length }}
+            </span>
+        </div>
+
+        {% if items %}
+            <div class="row g-3">
+                {% for item in items %}
+                <div class="col-md-6">
+                    <div class="card h-100">
+
+                        <!-- Color-coded header: red for lost, green for found -->
+                        <div class="card-header {% if item.type == 'lost' %}bg-danger{% else %}bg-success{% endif %} text-white d-flex justify-content-between align-items-center">
+                            <span>
+                                {% if item.type == 'lost' %}
+                                    <i class="bi bi-exclamation-circle-fill"></i> LOST
+                                {% else %}
+                                    <i class="bi bi-check-circle-fill"></i> FOUND
+                                {% endif %}
+                            </span>
+                            <small>{{ item.posted_at.strftime('%d %b %Y') }}</small>
+                        </div>
+
+                        <div class="card-body">
+                            <!-- Item name (bold) -->
+                            <h6 class="fw-bold mb-2">
+                                <i class="bi bi-tag-fill text-muted"></i>
+                                {{ item.item_name }}
+                            </h6>
+
+                            <!-- Description (if any) -->
+                            {% if item.description %}
+                                <p class="text-muted small mb-2">{{ item.description }}</p>
+                            {% endif %}
+
+                            <!-- Contact info -->
+                            <div class="mt-auto pt-2 border-top">
+                                <small>
+                                    <i class="bi bi-person-fill text-primary"></i>
+                                    <strong>Contact:</strong> {{ item.contact }}
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <!-- Empty state message -->
+            <div class="text-center py-5">
+                <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                <h5 class="text-muted">No items posted yet.</h5>
+                <p class="text-muted small">Be the first to post a lost or found item!</p>
+            </div>
+        {% endif %}
+
+    </div>
+    <!-- END ITEMS COLUMN -->
+
+</div>
+
+{% endblock %}

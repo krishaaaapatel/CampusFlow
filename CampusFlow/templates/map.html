@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Faculty Map - IAR University ERP{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Color-coded badge for each department */
+    .dept-badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .faculty-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .faculty-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2><i class="bi bi-map-fill"></i> Faculty Directory & Office Map</h2>
+    <p>Find faculty offices, departments, and room numbers across the IAR University campus.</p>
+</div>
+
+
+<!--
+    Campus Layout Diagram (simple HTML/CSS — no image needed)
+    This is a very basic visual representation of where buildings are.
+-->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-building"></i> Campus Building Layout (Simplified)
+    </div>
+    <div class="card-body">
+        <div class="row g-3 text-center">
+
+            <!-- Block A -->
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: #eaf4fb; border: 2px solid #3498db;">
+                    <i class="bi bi-building fs-2 text-primary"></i>
+                    <h5 class="mt-2 fw-bold">Block A</h5>
+                    <small class="text-muted">Mathematics &amp; Sciences</small><br>
+                    <span class="badge bg-primary mt-1">Rooms 101–120</span>
+                </div>
+            </div>
+
+            <!-- Block B -->
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: #eafaf1; border: 2px solid #2ecc71;">
+                    <i class="bi bi-building fs-2 text-success"></i>
+                    <h5 class="mt-2 fw-bold">Block B</h5>
+                    <small class="text-muted">Computer Science &amp; IT</small><br>
+                    <span class="badge bg-success mt-1">Rooms 201–220</span>
+                </div>
+            </div>
+
+            <!-- Block C -->
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: #fef9e7; border: 2px solid #f39c12;">
+                    <i class="bi bi-building fs-2 text-warning"></i>
+                    <h5 class="mt-2 fw-bold">Block C</h5>
+                    <small class="text-muted">Physics &amp; Engineering</small><br>
+                    <span class="badge bg-warning text-dark mt-1">Rooms 301–320</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Entrance indicator -->
+        <div class="text-center mt-3">
+            <span class="badge bg-dark px-4 py-2" style="font-size: 0.85rem;">
+                <i class="bi bi-arrow-up-circle"></i> Main Campus Entrance (South Gate)
+            </span>
+        </div>
+    </div>
+</div>
+
+
+<!-- ===== Faculty Cards ===== -->
+<h5 class="mb-3 fw-bold text-muted">
+    <i class="bi bi-people-fill text-primary"></i>
+    Faculty Members ({{ faculty|length }} total)
+</h5>
+
+{% if faculty %}
+<div class="row g-3">
+    {% for f in faculty %}
+    <div class="col-md-4">
+        <div class="card faculty-card h-100">
+            <div class="card-body">
+                <!-- Avatar icon -->
+                <div class="d-flex align-items-center mb-3">
+                    <div style="
+                        background: #1a3a6b;
+                        color: white;
+                        border-radius: 50%;
+                        width: 48px;
+                        height: 48px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.4rem;
+                        flex-shrink: 0;
+                    ">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="mb-0 fw-bold">{{ f.name }}</h6>
+                        <small class="text-muted">{{ f.department }}</small>
+                    </div>
+                </div>
+
+                <!-- Office location info -->
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                    <span style="font-size: 0.9rem;">
+                        {{ f.room_number or 'Room not listed' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Anonymous chat button (only shown when logged in) -->
+            {% if session.user_id and session.user_role == 'student' %}
+            <div class="card-footer py-2">
+                <a href="{{ url_for('chat') }}" class="btn btn-sm btn-outline-success w-100">
+                    <i class="bi bi-incognito"></i> Send Anonymous Message
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+    <div class="alert alert-info">No faculty members found in the database.</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Academic Calendar - IAR University{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h2><i class="bi bi-calendar3"></i> Academic Calendar 2025-26</h2>
+    <p>Important dates, holidays, exams and events for the academic year.</p>
+</div>
+
+<!-- Legend -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <span class="badge bg-danger px-3 py-2"><i class="bi bi-umbrella-fill"></i> Holiday</span>
+    <span class="badge bg-primary px-3 py-2"><i class="bi bi-journal-text"></i> Exam</span>
+    <span class="badge bg-success px-3 py-2"><i class="bi bi-star-fill"></i> Event</span>
+    <span class="badge bg-warning text-dark px-3 py-2"><i class="bi bi-exclamation-circle"></i> Deadline</span>
+    <span class="badge bg-secondary px-3 py-2"><i class="bi bi-circle"></i> Other</span>
+</div>
+
+{% if events %}
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in events %}
+                <tr>
+                    <td class="fw-semibold" style="white-space:nowrap;">
+                        {{ e.event_date.strftime('%d %b %Y') }}
+                        {% if e.end_date and e.end_date != e.event_date %}
+                        <br><small class="text-muted">to {{ e.end_date.strftime('%d %b %Y') }}</small>
+                        {% endif %}
+                    </td>
+                    <td class="fw-semibold">{{ e.title }}</td>
+                    <td>
+                        {% if e.category == 'holiday' %}
+                            <span class="badge bg-danger">Holiday</span>
+                        {% elif e.category == 'exam' %}
+                            <span class="badge bg-primary">Exam</span>
+                        {% elif e.category == 'event' %}
+                            <span class="badge bg-success">Event</span>
+                        {% elif e.category == 'deadline' %}
+                            <span class="badge bg-warning text-dark">Deadline</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Other</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted small">{{ e.description or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">No calendar events found.</div>
+{% endif %}
+
+{% endblock %}

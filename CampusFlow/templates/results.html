@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}My Results - IAR University{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h2><i class="bi bi-bar-chart-fill"></i> My Academic Results</h2>
+    <p>Semester-wise subject marks and grades.</p>
+</div>
+
+{% if semesters %}
+{% for sem, subjects in semesters.items() %}
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <i class="bi bi-journal-bookmark-fill"></i> {{ sem }}
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Subject</th>
+                    <th class="text-center">Marks</th>
+                    <th class="text-center">Out Of</th>
+                    <th class="text-center">Percentage</th>
+                    <th class="text-center">Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in subjects %}
+                <tr>
+                    <td>{{ s.subject }}</td>
+                    <td class="text-center fw-bold">{{ s.marks }}</td>
+                    <td class="text-center text-muted">{{ s.total_marks }}</td>
+                    <td class="text-center">
+                        {% set pct = (s.marks / s.total_marks * 100) | round(1) %}
+                        <div class="progress" style="height:18px;">
+                            <div class="progress-bar
+                                {% if pct >= 85 %}bg-success
+                                {% elif pct >= 60 %}bg-primary
+                                {% elif pct >= 40 %}bg-warning
+                                {% else %}bg-danger{% endif %}"
+                                style="width:{{ pct }}%;">{{ pct }}%</div>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge fs-6
+                            {% if s.grade in ['A+','A'] %}bg-success
+                            {% elif s.grade in ['B+','B'] %}bg-primary
+                            {% elif s.grade == 'C' %}bg-warning text-dark
+                            {% else %}bg-danger{% endif %}">
+                            {{ s.grade }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-secondary">
+                <tr>
+                    <td class="fw-bold">Semester Average</td>
+                    <td class="text-center fw-bold">
+                        {{ (subjects | sum(attribute='marks') / subjects|length) | round(1) }}
+                    </td>
+                    <td class="text-center text-muted">100</td>
+                    <td class="text-center fw-bold">
+                        {{ (subjects | sum(attribute='marks') / subjects|length) | round(1) }}%
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle fs-2 d-block mb-2"></i>
+    No results available yet. Please contact your faculty.
+</div>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Dashboard
+</a>
+{% endblock %}

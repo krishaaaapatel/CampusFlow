@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}IAR University ERP{% endblock %}</title>
+
+    <!-- Google Fonts: Playfair Display for headings, DM Sans for body -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        /* =============================================
+           DESIGN TOKENS — change these to retheme all
+        ============================================= */
+        :root {
+            --bg:          #f7f3ee;        /* warm cream page background */
+            --surface:     #ffffff;        /* card / panel background */
+            --charcoal:    #1c1917;        /* deep charcoal — navbar, headings */
+            --charcoal2:   #292524;        /* slightly lighter charcoal */
+            --gold:        #d97706;        /* saffron gold accent */
+            --gold-light:  #fef3c7;        /* pale gold for highlights */
+            --green:       #15574a;        /* deep forest green — secondary accent */
+            --green-light: #d1fae5;
+            --red:         #b91c1c;
+            --red-light:   #fee2e2;
+            --text:        #1c1917;        /* main body text */
+            --muted:       #78716c;        /* muted text */
+            --border:      #e7e0d8;        /* warm-toned border */
+            --shadow:      0 2px 16px rgba(28,25,23,.08);
+            --shadow-hover: 0 8px 32px rgba(28,25,23,.15);
+            --radius:      12px;
+            --radius-sm:   8px;
+        }
+
+        /* =============================================
+           GLOBAL RESET
+        ============================================= */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        h1,h2,h3,h4,h5,h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        /* Page fade-in on load */
+        .main-content {
+            animation: fadeUp 0.45s ease both;
+        }
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(14px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* =============================================
+           NAVBAR
+        ============================================= */
+        .navbar {
+            background-color: var(--charcoal);
+            padding: 0 28px;
+            min-height: 60px;
+            border-bottom: 3px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff !important;
+            letter-spacing: 0.3px;
+            padding: 12px 0;
+        }
+        .navbar-brand .accent { color: var(--gold); }
+        .navbar-brand .dot    { color: var(--gold); font-size: 1.6rem; line-height: 0; vertical-align: middle; }
+
+        .nav-link {
+            color: #c9c3bb !important;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            padding: 8px 10px !important;
+            border-radius: 6px;
+            transition: background .2s, color .2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #fff !important;
+            background: rgba(255,255,255,.08);
+        }
+        .nav-link i { margin-right: 5px; font-size: 0.9rem; }
+
+        .dropdown-menu {
+            background: var(--charcoal2);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+        }
+        .dropdown-item { color: #c9c3bb; padding: 8px 16px; }
+        .dropdown-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .dropdown-divider { border-color: rgba(255,255,255,.1); }
+
+        /* =============================================
+           PAGE HEADER — replaces the old blue gradient
+        ============================================= */
+        .page-header {
+            background: var(--charcoal);
+            color: white;
+            padding: 28px 36px;
+            border-radius: var(--radius);
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        /* decorative gold bar on left edge */
+        .page-header::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 5px;
+            background: var(--gold);
+        }
+        /* subtle dot-grid texture */
+        .page-header::after {
+            content: '';
+            position: absolute;
+            right: -20px; top: -20px;
+            width: 180px; height: 180px;
+            background-image: radial-gradient(circle, rgba(217,119,6,.25) 1.5px, transparent 1.5px);
+            background-size: 18px 18px;
+            border-radius: 50%;
+        }
+        .page-header h2 {
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        .page-header p {
+            color: #c9c3bb;
+            margin: 0;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* =============================================
+           CARDS
+        ============================================= */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: box-shadow .25s, transform .25s;
+        }
+        .card:hover { box-shadow: var(--shadow-hover); }
+
+        .card-header {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid var(--border);
+            border-radius: var(--radius) var(--radius) 0 0 !important;
+            padding: 14px 18px;
+            background: transparent;
+        }
+
+        /* Coloured card headers */
+        .card-header.ch-gold    { background: var(--charcoal); color: white; border-bottom: 3px solid var(--gold); }
+        .card-header.ch-green   { background: var(--green);    color: white; }
+        .card-header.ch-red     { background: var(--red);      color: white; }
+        .card-header.ch-warning { background: #92400e;         color: white; }
+        .card-header.ch-purple  { background: #5b21b6;         color: white; }
+        .card-header.ch-dark    { background: var(--charcoal); color: white; }
+
+        .card-footer {
+            background: #faf8f5;
+            border-top: 1px solid var(--border);
+            border-radius: 0 0 var(--radius) var(--radius);
+            padding: 12px 18px;
+        }
+
+        /* =============================================
+           BUTTONS — override Bootstrap
+        ============================================= */
+        .btn {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            transition: all .2s;
+        }
+        .btn-primary    { background: var(--charcoal); border-color: var(--charcoal); color: #fff; }
+        .btn-primary:hover { background: #2d2926; border-color: #2d2926; }
+
+        .btn-gold       { background: var(--gold); border-color: var(--gold); color: white; }
+        .btn-gold:hover { background: #b45309; border-color: #b45309; color: white; }
+
+        .btn-outline-primary  { color: var(--charcoal); border-color: var(--charcoal); }
+        .btn-outline-primary:hover { background: var(--charcoal); color: #fff; }
+
+        .btn-outline-success { color: var(--green); border-color: var(--green); }
+        .btn-outline-success:hover { background: var(--green); color: #fff; }
+
+        .btn-success { background: var(--green); border-color: var(--green); }
+        .btn-success:hover { background: #0f4038; border-color: #0f4038; }
+
+        .btn-warning { background: var(--gold); border-color: var(--gold); color: white; }
+        .btn-warning:hover { background: #b45309; color: white; }
+
+        /* =============================================
+           BADGES — override Bootstrap
+        ============================================= */
+        .badge.bg-primary { background: var(--charcoal) !important; }
+        .badge.bg-success { background: var(--green)    !important; }
+        .badge.bg-warning { background: var(--gold)     !important; color: white !important; }
+        .badge.bg-danger  { background: var(--red)      !important; }
+
+        /* =============================================
+           TABLES
+        ============================================= */
+        .table { font-size: 0.9rem; }
+        .table th {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--muted);
+            border-bottom: 2px solid var(--border);
+        }
+        .table-dark th {
+            background: var(--charcoal);
+            color: #c9c3bb;
+            border-color: rgba(255,255,255,.1);
+        }
+        .table-hover tbody tr:hover { background-color: #faf7f2; }
+
+        /* =============================================
+           FORM CONTROLS
+        ============================================= */
+        .form-control, .form-select {
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: #fff;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(217,119,6,.15);
+            outline: none;
+        }
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--charcoal);
+            margin-bottom: 5px;
+        }
+
+        /* =============================================
+           ALERTS
+        ============================================= */
+        .alert {
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            border: none;
+        }
+        .alert-success { background: var(--green-light); color: #065f46; }
+        .alert-danger  { background: var(--red-light);   color: #991b1b; }
+        .alert-warning { background: var(--gold-light);  color: #92400e; }
+        .alert-info    { background: #dbeafe; color: #1e40af; }
+
+        /* =============================================
+           PROGRESS BARS
+        ============================================= */
+        .progress {
+            background: #e8e3dd;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .progress-bar { border-radius: 99px; }
+
+        /* =============================================
+           SIDEBAR STAT ROWS (used in attendance, fees etc)
+        ============================================= */
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .stat-icon { font-size: 2rem; margin-bottom: 6px; }
+        .stat-card .stat-val  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
+        .stat-card .stat-lbl  { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* =============================================
+           CONVERSATION BUBBLES
+        ============================================= */
+        .bubble-student {
+            background: var(--charcoal);
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+            padding: 10px 16px;
+            max-width: 75%;
+            font-size: 0.9rem;
+        }
+        .bubble-faculty {
+            background: white;
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            border-radius: 18px 18px 18px 4px;
+            padding: 10px 16px;
+            max-width: 75%;
+            font-size: 0.9rem;
+        }
+        .bubble-time { font-size: 0.72rem; opacity: .6; margin-top: 4px; }
+
+        /* =============================================
+           SECTION DIVIDER LABELS
+        ============================================= */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+            padding-left: 2px;
+        }
+
+        /* =============================================
+           MAIN LAYOUT
+        ============================================= */
+        .main-content {
+            padding: 30px 20px;
+            max-width: 1160px;
+            margin: 0 auto;
+        }
+
+        /* =============================================
+           FOOTER
+        ============================================= */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            border-top: 1px solid var(--border);
+            letter-spacing: 0.3px;
+        }
+        footer span { color: var(--gold); font-weight: 600; }
+
+        /* =============================================
+           SCROLLBAR (webkit)
+        ============================================= */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f0ebe4; }
+        ::-webkit-scrollbar-thumb { background: #c8bfb5; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+        /* =============================================
+           UTILITY
+        ============================================= */
+        .text-gold  { color: var(--gold) !important; }
+        .text-muted { color: var(--muted) !important; }
+        .bg-gold    { background: var(--gold) !important; }
+        .bg-charcoal{ background: var(--charcoal) !important; }
+        .border-gold{ border-color: var(--gold) !important; }
+
+        /* Hover lift for quick-link cards */
+        .lift { transition: transform .2s, box-shadow .2s; }
+        .lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+        /* Subtle left border accent rows */
+        .row-gold   { border-left: 4px solid var(--gold);  background: #fffbf2; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+        .row-green  { border-left: 4px solid var(--green); background: #f0fdf7; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+        .row-red    { border-left: 4px solid var(--red);   background: #fff5f5; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+        .row-purple { border-left: 4px solid #7c3aed;      background: #f5f3ff; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+        .row-muted  { border-left: 4px solid #d6d0c9;      background: #faf9f7; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
+        <span class="dot">●</span>&nbsp;IAR <span class="accent">University</span>
+    </a>
+
+    <button class="navbar-toggler border-0" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bi bi-list text-white fs-4"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto flex-wrap gap-1 py-2 py-lg-0">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index') }}"><i class="bi bi-house-door"></i>Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('faculty_map') }}"><i class="bi bi-map"></i>Faculty Map</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('lost_found') }}"><i class="bi bi-search-heart"></i>Lost & Found</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('academic_calendar') }}"><i class="bi bi-calendar3"></i>Calendar</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('events') }}"><i class="bi bi-star"></i>Events</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('circulars') }}"><i class="bi bi-megaphone"></i>Circulars</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('exam_schedule') }}"><i class="bi bi-journal-text"></i>Exams</a>
+        </li>
+
+        {% if session.user_id %}
+            {% if session.user_role == 'student' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('timetable') }}"><i class="bi bi-clock"></i>Timetable</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_attendance') }}"><i class="bi bi-calendar2-check"></i>Attendance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('results') }}"><i class="bi bi-bar-chart"></i>Results</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('fees') }}"><i class="bi bi-cash-coin"></i>Fees</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('chat') }}"><i class="bi bi-chat-dots"></i>Anon Chat</a>
+            </li>
+            {% if session.user_role == 'faculty' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('mark_attendance') }}"><i class="bi bi-clipboard2-check"></i>Attendance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_circular') }}"><i class="bi bi-plus-circle"></i>Post Circular</a>
+            </li>
+            {% endif %}
+        {% endif %}
+      </ul>
+
+      <ul class="navbar-nav ms-auto">
+        {% if session.user_id %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+                <span style="background:var(--gold);color:#fff;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;">
+                    {{ session.user_name[0].upper() }}
+                </span>
+                {{ session.user_name.split()[0] }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('edit_profile') }}"><i class="bi bi-person-gear me-2"></i>Edit Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" style="color:#ef4444;" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('login') }}">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Flash messages -->
+<div class="container-fluid px-4 mt-3">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {% if category == 'success' %}<i class="bi bi-check-circle-fill me-2"></i>
+            {% elif category == 'danger' %}<i class="bi bi-x-circle-fill me-2"></i>
+            {% elif category == 'warning' %}<i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {% else %}<i class="bi bi-info-circle-fill me-2"></i>{% endif %}
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="main-content">
+    {% block content %}{% endblock %}
+</div>
+
+<footer>
+    &copy; 2026 <span>IAR University</span> &mdash; Enterprise Resource Portal &mdash; All Rights Reserved
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile - IAR University{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+<div class="col-md-7">
+    <div class="page-header">
+        <h2><i class="bi bi-person-gear"></i> Edit My Profile</h2>
+        <p>Update your personal and institutional details.</p>
+    </div>
+    <div class="card">
+        <div class="card-body p-4">
+            <form method="POST" action="{{ url_for('edit_profile') }}">
+
+                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                    <i class="bi bi-person-fill"></i> Personal Details
+                </h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Phone Number</label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ user.phone or '' }}" placeholder="9876543210" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Date of Birth</label>
+                        <input type="date" name="dob" class="form-control"
+                               value="{{ user.dob or '' }}" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Blood Group</label>
+                        <select name="blood_group" class="form-select">
+                            <option value="">-- Select --</option>
+                            {% for bg in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}
+                            <option value="{{ bg }}" {% if user.blood_group == bg %}selected{% endif %}>{{ bg }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Address</label>
+                        <input type="text" name="address" class="form-control"
+                               value="{{ user.address or '' }}" placeholder="Home address" />
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                    <i class="bi bi-people-fill"></i> Parent / Guardian
+                </h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Parent Name</label>
+                        <input type="text" name="parent_name" class="form-control"
+                               value="{{ user.parent_name or '' }}" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Parent Phone</label>
+                        <input type="text" name="parent_phone" class="form-control"
+                               value="{{ user.parent_phone or '' }}" />
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                    <i class="bi bi-building"></i> Institutional Details
+                </h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Enrollment Number</label>
+                        <input type="text" name="enrollment_no" class="form-control"
+                               value="{{ user.enrollment_no or '' }}" placeholder="IAR2024CS001" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Department</label>
+                        <input type="text" class="form-control" value="{{ user.department or '' }}" disabled />
+                        <small class="text-muted">Contact admin to change.</small>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save-fill"></i> Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <a href="{{ url_for('dashboard') }}" class="text-muted small">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+</div>
+{% endblock %}

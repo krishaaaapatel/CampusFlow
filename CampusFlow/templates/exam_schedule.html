@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Exam Schedule - IAR University{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h2><i class="bi bi-journal-text"></i> Exam Schedule</h2>
+    <p>Upcoming examinations — dates, timings and hall allocations.</p>
+</div>
+
+{% if exams %}
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Subject</th>
+                    <th>Type</th>
+                    <th>Semester</th>
+                    <th>Time</th>
+                    <th>Hall / Room</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td class="fw-semibold">{{ exam.exam_date.strftime('%d %b %Y') }}</td>
+                    <td class="fw-semibold">{{ exam.subject }}</td>
+                    <td>
+                        {% if exam.exam_type == 'mid' %}
+                            <span class="badge bg-warning text-dark">Mid Sem</span>
+                        {% elif exam.exam_type == 'end' %}
+                            <span class="badge bg-danger">End Sem</span>
+                        {% elif exam.exam_type == 'practical' %}
+                            <span class="badge bg-info text-dark">Practical</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Viva</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ exam.semester }}</td>
+                    <td style="white-space:nowrap;">
+                        {{ exam.start_time.strftime('%I:%M %p') if exam.start_time else '' }}
+                        — {{ exam.end_time.strftime('%I:%M %p') if exam.end_time else '' }}
+                    </td>
+                    <td><span class="badge bg-primary">{{ exam.room or 'TBA' }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">No exam schedule published yet.</div>
+{% endif %}
+
+{% endblock %}

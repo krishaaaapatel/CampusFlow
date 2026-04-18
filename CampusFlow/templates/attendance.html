@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}My Attendance - IAR University{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h2><i class="bi bi-calendar2-check-fill"></i> My Attendance</h2>
+    <p>Subject-wise attendance summary and day-by-day records.</p>
+</div>
+
+<!-- Subject Summary Cards -->
+<h5 class="fw-bold text-muted mb-3">
+    <i class="bi bi-bar-chart-fill text-primary"></i> Subject-wise Summary
+</h5>
+
+{% if summary %}
+<div class="row g-3 mb-4">
+    {% for s in summary %}
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="fw-bold">{{ s.subject }}</h6>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted">{{ s.present }} / {{ s.total_classes }} classes</small>
+                    <span class="badge fs-6
+                        {% if s.percentage >= 75 %}bg-success
+                        {% elif s.percentage >= 60 %}bg-warning text-dark
+                        {% else %}bg-danger{% endif %}">
+                        {{ s.percentage }}%
+                    </span>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="progress mb-2" style="height:10px;">
+                    <div class="progress-bar
+                        {% if s.percentage >= 75 %}bg-success
+                        {% elif s.percentage >= 60 %}bg-warning
+                        {% else %}bg-danger{% endif %}"
+                        style="width:{{ s.percentage }}%;">
+                    </div>
+                </div>
+
+                <!-- Warning if below 75% -->
+                {% if s.percentage < 75 %}
+                <small class="text-danger">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    Below 75% — shortage warning!
+                </small>
+                {% else %}
+                <small class="text-success">
+                    <i class="bi bi-check-circle-fill"></i> Attendance OK
+                </small>
+                {% endif %}
+            </div>
+
+            <div class="card-footer d-flex justify-content-between py-2"
+                 style="font-size:0.82rem;">
+                <span class="text-success">
+                    <i class="bi bi-check-circle-fill"></i> Present: {{ s.present }}
+                </span>
+                <span class="text-danger">
+                    <i class="bi bi-x-circle-fill"></i> Absent: {{ s.absent }}
+                </span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="alert alert-info mb-4">
+    <i class="bi bi-info-circle"></i>
+    No attendance records yet. Your faculty hasn't marked attendance yet.
+</div>
+{% endif %}
+
+<!-- Day-by-day detail table -->
+<h5 class="fw-bold text-muted mb-3">
+    <i class="bi bi-table text-primary"></i> Day-by-Day Records
+</h5>
+
+{% if details %}
+<div class="card">
+    <div class="card-body p-0" style="max-height:400px; overflow-y:auto;">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark" style="position:sticky; top:0;">
+                <tr>
+                    <th>Date</th>
+                    <th>Subject</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in details %}
+                <tr>
+                    <td>{{ d.date.strftime('%d %b %Y') }}</td>
+                    <td>{{ d.subject }}</td>
+                    <td class="text-center">
+                        {% if d.status == 'present' %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle-fill"></i> Present
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle-fill"></i> Absent
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">No detailed records found.</div>
+{% endif %}
+
+<div class="mt-3">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Conversation — IAR University{% endblock %}
+
+{% block extra_css %}
+<style>
+.chat-header {
+    background: var(--charcoal);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.chat-header .avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+.chat-header .info h5 { color: white; margin: 0; font-size: 1rem; }
+.chat-header .info p  { color: #a8a29e; margin: 0; font-size: 0.8rem; }
+
+.chat-box {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    min-height: 340px;
+    max-height: 480px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+.msg-wrap-right { display:flex; justify-content:flex-end; margin-bottom:16px; }
+.msg-wrap-left  { display:flex; justify-content:flex-start; margin-bottom:16px; }
+
+.bubble-student {
+    background: var(--charcoal);
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+    padding: 10px 16px;
+    max-width: 72%;
+}
+.bubble-faculty {
+    background: white;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    border-radius: 18px 18px 18px 4px;
+    padding: 10px 16px;
+    max-width: 72%;
+}
+.bubble-student .sender { font-size:0.72rem; opacity:.7; margin-bottom:4px; color: var(--gold); }
+.bubble-faculty .sender { font-size:0.72rem; color:var(--muted); margin-bottom:4px; }
+.bubble-student .time   { font-size:0.72rem; opacity:.6; margin-top:4px; }
+.bubble-faculty .time   { font-size:0.72rem; color:var(--muted); margin-top:4px; }
+
+.chat-input-wrap {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.chat-input-wrap input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text);
+    background: transparent;
+}
+.chat-input-wrap input::placeholder { color: var(--muted); }
+
+.ended-banner {
+    background: #f3f4f6;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div style="max-width:720px; margin:0 auto;">
+
+    <!-- Chat Header -->
+    <div class="chat-header">
+        <div class="avatar">
+            {% if session.user_role == 'student' %}{{ faculty.name[0] }}{% else %}<i class="bi bi-incognito" style="font-size:1.1rem;"></i>{% endif %}
+        </div>
+        <div class="info">
+            <h5>
+                {% if session.user_role == 'student' %}{{ faculty.name }}{% else %}Anonymous Student{% endif %}
+            </h5>
+            <p>
+                {% if session.user_role == 'student' %}
+                    Your identity is hidden from faculty &nbsp;·&nbsp;
+                {% endif %}
+                <span style="color:{% if conv.status == 'active' %}#4ade80{% else %}#9ca3af{% endif %};">
+                    ● {{ conv.status | capitalize }}
+                </span>
+            </p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm ms-auto"
+           style="background:rgba(255,255,255,.1);color:#c9c3bb;border:1px solid rgba(255,255,255,.2);">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-box" id="chatbox">
+        {% if messages %}
+        {% for msg in messages %}
+            {% if msg.sender_role == 'student' %}
+            <div class="msg-wrap-right">
+                <div class="bubble-student">
+                    <div class="sender">
+                        {% if session.user_role == 'student' %}You (Anonymous){% else %}Anonymous Student{% endif %}
+                    </div>
+                    {{ msg.message }}
+                    <div class="time">{{ msg.sent_at.strftime('%I:%M %p · %d %b') }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="msg-wrap-left">
+                <div class="bubble-faculty">
+                    <div class="sender">
+                        {% if session.user_role == 'student' %}{{ faculty.name }}{% else %}You (Faculty){% endif %}
+                    </div>
+                    {{ msg.message }}
+                    <div class="time">{{ msg.sent_at.strftime('%I:%M %p · %d %b') }}</div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+        <div class="text-center text-muted py-5" style="font-size:0.9rem;">
+            <i class="bi bi-chat-dots" style="font-size:2rem;display:block;margin-bottom:8px;opacity:.3;"></i>
+            No messages yet — start the conversation!
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Reply input or Ended banner -->
+    {% if conv.status == 'active' %}
+    <form method="POST" action="{{ url_for('conversation', conv_id=conv.id) }}">
+        <div class="chat-input-wrap">
+            <input type="text" name="message"
+                   placeholder="Type a message..." required autofocus />
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <div class="ended-banner">
+        <i class="bi bi-lock-fill me-2"></i>
+        This conversation has been ended by the student.
+    </div>
+    {% endif %}
+
+    <!-- End button (student only) -->
+    {% if session.user_role == 'student' and conv.status == 'active' %}
+    <div class="text-end mt-3">
+        <a href="{{ url_for('end_conversation', conv_id=conv.id) }}"
+           class="btn btn-sm btn-outline-danger"
+           onclick="return confirm('End this conversation? Faculty will not be able to reply after this.')">
+            <i class="bi bi-x-circle"></i> End Conversation
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    var cb = document.getElementById("chatbox");
+    cb.scrollTop = cb.scrollHeight;
+</script>
+{% endblock %}
