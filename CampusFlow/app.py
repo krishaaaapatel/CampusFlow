@@ -267,11 +267,26 @@ def timetable():
         ORDER BY FIELD(day_of_week,'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'), start_time
     """, (dept, semester))
     rows = cursor.fetchall()
+    cursor.close(); db.close()
+
+    # Fix: MySQL TIME comes back as timedelta — convert to readable string
+    for row in rows:
+        for col in ["start_time", "end_time"]:
+            val = row[col]
+            if val is not None:
+                total = int(val.total_seconds())
+                h = total // 3600
+                m = (total % 3600) // 60
+                period = "AM" if h < 12 else "PM"
+                h12 = h % 12 or 12
+                row[col] = f"{h12:02d}:{m:02d} {period}"
+            else:
+                row[col] = ""
+
     days_order = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
     timetable_data = {day: [] for day in days_order}
     for row in rows:
         timetable_data[row["day_of_week"]].append(row)
-    cursor.close(); db.close()
     return render_template("timetable.html", timetable_data=timetable_data,
                            days_order=days_order, semesters=semesters,
                            selected_sem=semester, dept=dept)
@@ -303,14 +318,26 @@ def exam_schedule():
     db = get_db(); cursor = db.cursor(dictionary=True)
     dept = session.get("user_dept", "")
     if session["user_role"] == "student":
-        cursor.execute("""
-            SELECT * FROM exam_schedule
-            WHERE department=%s ORDER BY exam_date ASC
-        """, (dept,))
+        cursor.execute("SELECT * FROM exam_schedule WHERE department=%s ORDER BY exam_date ASC", (dept,))
     else:
         cursor.execute("SELECT * FROM exam_schedule ORDER BY exam_date ASC")
     exams = cursor.fetchall()
     cursor.close(); db.close()
+
+    # Fix: MySQL TIME comes back as timedelta — convert to readable string
+    for exam in exams:
+        for col in ["start_time", "end_time"]:
+            val = exam[col]
+            if val is not None:
+                total = int(val.total_seconds())
+                h = total // 3600
+                m = (total % 3600) // 60
+                period = "AM" if h < 12 else "PM"
+                h12 = h % 12 or 12
+                exam[col] = f"{h12:02d}:{m:02d} {period}"
+            else:
+                exam[col] = ""
+
     return render_template("exam_schedule.html", exams=exams)
 
 @app.route("/results")
