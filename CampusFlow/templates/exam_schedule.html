@@ -39,8 +39,7 @@
                     </td>
                     <td>{{ exam.semester }}</td>
                     <td style="white-space:nowrap;">
-                        {{ exam.start_time.strftime('%I:%M %p') if exam.start_time else '' }}
-                        — {{ exam.end_time.strftime('%I:%M %p') if exam.end_time else '' }}
+                        {{ exam.start_time }} — {{ exam.end_time }}
                     </td>
                     <td><span class="badge bg-primary">{{ exam.room or 'TBA' }}</span></td>
                 </tr>
